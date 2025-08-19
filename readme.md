@@ -1,9 +1,11 @@
-Got it 👍 If you don’t want to use a `requirements.txt`, you can directly list the `pip install` command in your **README.md**.
-Here’s the updated version for you:
 
----
 
 # 📧 AI-Powered Gmail & Calendar Assistant
+### Demo Video
+Watch a recording of the successful test on Loom:
+
+[Watch the Loom Video](https://www.loom.com/share/88f78dadc7434c67b7b4b731e3b80520?sid=b6a8a53c-765b-4c6c-9acc-553bb588f8d2)
+
 
 This project demonstrates how to use **Agentic AI (CrewAI + OpenAI LLMs)** with **Google Gmail & Calendar APIs** to:
 
