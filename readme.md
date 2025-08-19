@@ -75,7 +75,7 @@ pip install google-auth google-auth-oauthlib google-api-python-client python-dat
 ## ▶️ Running the Script
 
 ```bash
-python main.py
+python drafter.py
 ```
 
 * On first run, a browser window will open asking you to log in with Google.
