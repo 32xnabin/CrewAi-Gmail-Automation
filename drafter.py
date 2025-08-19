@@ -1,9 +1,15 @@
 import os
 import base64
 import re
-from datetime import datetime, timedelta
+
+from datetime import datetime, timedelta, timezone
+from dateutil import parser as date_parser
 from email.utils import parseaddr
 from dateutil import parser as date_parser
+
+
+
+from datetime import timezone
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -56,12 +62,12 @@ def get_calendar_service(creds):
 # ============================================================
 # GMAIL HELPERS
 # ============================================================
-def get_emails(service, max_results=2):
+def get_emails(service, max_results=3):
     """Retrieve recent emails"""
     results = service.users().messages().list(
         userId='me',
         maxResults=max_results,
-        labelIds=['INBOX']
+        labelIds=['INBOX','CATEGORY_PERSONAL']
     ).execute()
 
     messages = results.get('messages', [])
@@ -173,25 +179,36 @@ def send_reply(service, email_id, reply_content):
 # ============================================================
 # CALENDAR HELPERS
 # ============================================================
+
+
+# Set your local timezone offset (example: Nepal +05:45)
+LOCAL_OFFSET = timedelta(hours=5, minutes=45)
+LOCAL_TZ = timezone(LOCAL_OFFSET)
+
 def extract_datetime_from_text(text):
-    """Extract the first datetime from text using fuzzy parsing"""
+    """Extract the first datetime from text, normalize AM/PM, ignore timezone"""
     try:
-        # dateutil can parse full sentences with day, date, time
+        # Normalize lowercase am/pm
+        text = text.replace("am", "AM").replace("pm", "PM")
         dt = date_parser.parse(text, fuzzy=True, default=datetime.now())
+        dt = dt.replace(tzinfo=LOCAL_TZ)  # make timezone-aware
         return dt
-    except:
+    except Exception:
         return None
 
 
-
 def check_calendar_availability(calendar_service, start_time, duration_minutes=60):
-    """Check if time slot is free in calendar"""
+    """Check if a time slot is free in Google Calendar (ignoring other timezones)"""
     end_time = start_time + timedelta(minutes=duration_minutes)
+
+    # Convert to RFC3339 string with local timezone
+    start_iso = start_time.isoformat()
+    end_iso = end_time.isoformat()
 
     events_result = calendar_service.events().list(
         calendarId='primary',
-        timeMin=start_time.isoformat() + 'Z',
-        timeMax=end_time.isoformat() + 'Z',
+        timeMin=start_iso,
+        timeMax=end_iso,
         singleEvents=True,
         orderBy='startTime'
     ).execute()
@@ -201,6 +218,8 @@ def check_calendar_availability(calendar_service, start_time, duration_minutes=6
         return "That time seems to be booked in my calendar, but I will get back to you with confirmation asap."
     else:
         return "That time seems to be available in my calendar, but I will get back to you with confirmation asap."
+
+
 
 
 # ============================================================
@@ -233,7 +252,7 @@ if __name__ == "__main__":
     gmail_service = get_gmail_service(creds)
     calendar_service = get_calendar_service(creds)
 
-    emails = get_emails(gmail_service, max_results=2)
+    emails = get_emails(gmail_service, max_results=3)
     print(f"Found {len(emails)} emails to process")
 
     for email in emails:
