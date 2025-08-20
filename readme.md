@@ -70,6 +70,7 @@ pip install google-auth google-auth-oauthlib google-api-python-client python-dat
 3. Configure OAuth consent screen (User type: External).
 4. Create **OAuth 2.0 Client ID** credentials.
 5. Download `credentials.json` and place it in the project root.
+6. If your project is not published add your test email in the users/audience
 
 ---
 ## add open ai api key to your env file
