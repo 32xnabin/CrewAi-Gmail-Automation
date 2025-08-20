@@ -36,6 +36,7 @@ cd ai-gmail-assistant
 ```
 
 ### 2. Create Virtual Environment (macOS/Linux)
+ you need python above 3.11 installed in your system
 
 ```bash
 python3 -m venv venv
@@ -71,6 +72,9 @@ pip install google-auth google-auth-oauthlib google-api-python-client python-dat
 5. Download `credentials.json` and place it in the project root.
 
 ---
+## add open ai api key to your env file
+
+OPENAI_API_KEY="your open ai api key"
 
 ## ▶️ Running the Script
 
